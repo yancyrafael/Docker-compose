@@ -133,12 +133,12 @@ Triggered by changes in `api/**`, `frontend/**`, or `db/**`.
 
 | Secret | Description |
 |--------|-------------|
-| `AZURE_AD_CLIENT_ID` | Azure Service Principal client ID |
-| `AZURE_AD_CLIENT_SECRET` | Azure Service Principal secret |
-| `AZURE_AD_TENANT_ID` | Azure tenant ID |
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID |
-| `DOCKERHUB_USERNAME` | Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub access token (Read & Write) |
+| `AZURE_AD_CLIENT_ID` | Azure Service Principal client ID 
+| `AZURE_AD_CLIENT_SECRET` | Azure Service Principal secret 
+| `AZURE_AD_TENANT_ID` | Azure tenant ID 
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription ID 
+| `DOCKERHUB_USERNAME` | Docker Hub username 
+| `DOCKERHUB_TOKEN` | Docker Hub access token (Read & Write) 
 
 ## Azure Resources
 
