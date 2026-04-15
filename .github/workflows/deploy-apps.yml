@@ -1,14 +1,16 @@
-name: Deploy Sitio2
+name: Deploy Apps
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - 'sitio2/**'
+      - 'api/**'
+      - 'frontend/**'
+      - 'db/**'
 
 jobs:
   build:
-    name: Build and Deploy apps 
+    name: Build and Deploy Apps
     runs-on: ubuntu-latest
 
     steps:
@@ -21,14 +23,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build image
-        run: docker build --tag yancyrafael/coffeshop-api:latest ./api
+      - name: Build API image
+        run: docker build --tag yancyrafael/coffeeshop-api:latest ./api
 
-        name: Build image
-        run: docker build --tag yancyrafael/coffeshop-web:latest ./frontend
+      - name: Build Web image
+        run: docker build --tag yancyrafael/coffeeshop-web:latest ./frontend
 
       - name: Push API image
-        run: docker push yancyrafael/coffeshop-api:latest
+        run: docker push yancyrafael/coffeeshop-api:latest
 
-        name: Push Web image
-        run: docker push yancyrafael/coffeshop-web:latest
+      - name: Push Web image
+        run: docker push yancyrafael/coffeeshop-web:latest
