@@ -1,5 +1,5 @@
 rg_name     = "rg-coffeeshop"
-location    = "East US 2"
+location    = "East US"
 api_image   = "yancyrafael/coffeeshop-api:latest"
 web_image   = "yancyrafael/coffeeshop-web:latest"
 db_password = "Rootpass123"
