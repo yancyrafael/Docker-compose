@@ -22,6 +22,31 @@ def get_db():
             time.sleep(5)
     return None
 
+def init_db():
+    db = get_db()
+    if not db:
+        return
+    cursor = db.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reservations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL,
+            phone VARCHAR(20),
+            date DATE NOT NULL,
+            time TIME NOT NULL,
+            guests INT NOT NULL,
+            message TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    db.commit()
+    cursor.close()
+    db.close()
+
+init_db()
+
+
 @app.route("/api/health")
 def health():
     return jsonify({"status": "ok"})

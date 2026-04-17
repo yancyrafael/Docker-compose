@@ -41,30 +41,39 @@ resource "azurerm_container_app_environment" "env" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.logs.id
 }
 
-resource "azurerm_container_app" "db" {
-  name                         = "coffeeshop-db"
-  container_app_environment_id = azurerm_container_app_environment.env.id
-  resource_group_name          = azurerm_resource_group.rg.name
-  revision_mode                = "Single"
+## My SQL Database code
 
-  template {
-    container {
-      name   = "mysql"
-      image  = "mysql:8"
-      cpu    = 0.5
-      memory = "1Gi"
+resource "azurerm_mysql_flexible_server" "db" {
+  name                   = "coffeeshop-mysql-server"
+  resource_group_name    = azurerm_resource_group.rg.name
+  location               = azurerm_resource_group.rg.location
+  administrator_login    = "adminuser"
+  administrator_password = var.db_password
+  sku_name               = "B_Standard_B1s"
+  version                = "8.0.21"
+  zone                   = "1"
 
-      env {
-        name  = "MYSQL_ROOT_PASSWORD"
-        value = var.db_password
-      }
-      env {
-        name  = "MYSQL_DATABASE"
-        value = "coffeeshop"
-      }
-    }
+  storage {
+    size_gb = 20
   }
 }
+
+resource "azurerm_mysql_flexible_server_firewall_rule" "allow_azure" {
+  name                = "allow-azure-services"
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_mysql_flexible_server.db.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "0.0.0.0"
+}
+
+resource "azurerm_mysql_flexible_database" "coffeeshop" {
+  name                = "coffeeshop"
+  resource_group_name = azurerm_resource_group.rg.name
+  server_name         = azurerm_mysql_flexible_server.db.name
+  charset             = "utf8mb4"
+  collation           = "utf8mb4_unicode_ci"
+}
+
 
 resource "azurerm_container_app" "api" {
   name                         = "coffeeshop-api"
@@ -81,11 +90,11 @@ resource "azurerm_container_app" "api" {
 
       env {
         name  = "DB_HOST"
-        value = "coffeeshop-db"
+        value = azurerm_mysql_flexible_server.db.fqdn
       }
       env {
         name  = "DB_USER"
-        value = "root"
+        value = "adminuser"
       }
       env {
         name  = "DB_PASSWORD"
@@ -98,7 +107,7 @@ resource "azurerm_container_app" "api" {
     }
   }
 
-    ingress {
+  ingress {
     external_enabled = true
     target_port      = 5000
     transport        = "auto"
