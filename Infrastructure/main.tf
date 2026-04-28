@@ -177,4 +177,3 @@ resource "azurerm_container_app" "web" {
     }
   }
 }
-#
