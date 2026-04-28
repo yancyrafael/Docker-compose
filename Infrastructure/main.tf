@@ -25,6 +25,14 @@ resource "azurerm_resource_group" "rg" {
   location  = var.location
 }
 
+resource "azurerm_container_registry" "acr" {
+  name                = "coffeeshopacr"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Basic"
+  admin_enabled       = true
+}
+
 # Define the Log Analytics Workspace (Required for logging)
 resource "azurerm_log_analytics_workspace" "logs" {
   name                = "logs-coffeeshop"
@@ -81,6 +89,17 @@ resource "azurerm_container_app" "api" {
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
 
+  registry {
+    server               = azurerm_container_registry.acr.login_server
+    username             = azurerm_container_registry.acr.admin_username
+    password_secret_name = "acr-password"
+  }
+
+secret {
+    name  = "acr-password"
+    value = azurerm_container_registry.acr.admin_password
+  }
+
   template {
     container {
       name   = "api"
@@ -119,11 +138,24 @@ resource "azurerm_container_app" "api" {
   }
 }
 
+
 resource "azurerm_container_app" "web" {
   name                         = "coffeeshop-web"
   container_app_environment_id = azurerm_container_app_environment.env.id
   resource_group_name          = azurerm_resource_group.rg.name
   revision_mode                = "Single"
+
+  registry {
+    server               = azurerm_container_registry.acr.login_server
+    username             = azurerm_container_registry.acr.admin_username
+    password_secret_name = "acr-password"
+  }
+
+  secret {
+    name  = "acr-password"
+    value = azurerm_container_registry.acr.admin_password
+  }
+
 
   template {
     container {
